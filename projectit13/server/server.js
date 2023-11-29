@@ -38,14 +38,18 @@ const db = mysql.createConnection({
 });
 // ------------------------------------------------------------------------
 // REGISTER ACCOUNTS 
-app.post('/register', (req, res) => {
-    const { email, username, password } = req.body;
-    const query = "INSERT INTO user_register (email, username, password) VALUES (?, ?, ?) ";
-
-    db.query(query, [email,username,password], (err, result) => {
-        if (err) return res.json(err);
-        return res.json(result);
-    });
+app.post('/register', upload.single('profile_picture'), (req, res) => {
+    const { email, username, password,profile_name } = req.body;
+    const profile_picture = req.file.buffer.toString('base64');
+    const query = "INSERT INTO user_register (email, username, password, profile_name, profile_picture) VALUES (?, ?,?, ?, ?) ";
+    console.log(profile_picture);
+    db.query(query, [email, username, password, profile_name, profile_picture], (err, result) => {
+    if (err) {
+        console.error('Error registering user:', err);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+    return res.json(result);
+});
 });
 // ------------------------------------------------------------------------
 // Endpoint to check if email exists
@@ -66,19 +70,19 @@ app.get('/check', (req, res) => {
 app.post("/upload", upload.single("imageUpload"), (req, res) => {
   const { message } = req.body;
   const imageUpload = req.file.buffer.toString('base64');
-
-  const query = "INSERT INTO user_posts (user_id, message, image_upload, profile_name) VALUES (?,?,?,?)";  
+  
+  const query = "INSERT INTO user_posts (user_id, message, image_upload, profile_name,profile_picture) VALUES (?,?,?,?,?)";  
   const profileName = req.session.profile_name;
+  const profile_picture = req.session.profile_picture;
   const user_id = req.session.user_id;
 
-  db.query(query, [user_id ,message, imageUpload,profileName], (err, result) => {
+  db.query(query, [user_id ,message, imageUpload,profileName,profile_picture], (err, result) => {
     if (err) {
       console.error(err);
       return res.status(500).json({ error: "Internal Server Error" });
     }
     console.log(result)
 
-    // Assuming 'result' contains the information about the inserted row
     return res.status(200).json({ success: true, insertedRow: result });
   });
 });
@@ -163,12 +167,12 @@ app.put('/posts/:id', upload.single('image_upload'), (request, response) => {
 
 // ------------------------------------------------------------------------
 app.get('/getcredentials', (req, res) => {
-  const sql = `SELECT * FROM user_posts WHERE user_id = ? LIMIT 1`;
-  const user_id = req.session.user_id;
-
-  db.query(sql, [user_id], (error, data) => {
+  const sql = `SELECT * FROM user_register WHERE id = ? LIMIT 1`;
+  const id = req.session.user_id;
+  console.log(id)
+  db.query(sql, [id], (error, data) => {
     if (error) return res.json(error);
-    const result = data.length > 0 ? data[0] : null;
+    const result = data.length > -1 ? data[0] : null;
     return res.json(result);
   });
 });
@@ -191,10 +195,11 @@ app.post('/auth', async (req, res) => {
     if (dataExists) {
       req.session.profile_name = result[0].profile_name;
       req.session.user_id = result[0].id;
-      req.session.email = result[0].email 
+      req.session.email = result[0].email;
+      req.session.profile_picture = result[0].profile_picture;
       // console.log('Session after setting email:', req.session);
-      // console.log('req.session.email:', req.session.profile_name);
-      console.log('ID NAKO NI:', req.session.email);
+      console.log('req.session.profile_picture:', req.session.profile_picture);
+      console.log('ID NAKO NI:', req.session.user_id);
       return res.json({ exists: dataExists });
     }
   } catch (error) {

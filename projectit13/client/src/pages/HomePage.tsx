@@ -12,6 +12,7 @@ interface Post {
   message: string;
   image_upload: string;
   profile_name: string;
+  profile_picture: string;
 }
 axios.defaults.withCredentials = true;
 
@@ -34,14 +35,15 @@ const HomePage = () => {
     
     axios.get('http://localhost:8081/getcredentials')
       .then(res => {
-        // console.log(res.data.profile_name)
+        console.log(res)
         setEamil(res.data.profile_name)
-        setprofPic(res.data.image_upload)
+        setprofPic(res.data.profile_picture)
+        console.log(profPic)
       })
       .catch(err => {
         console.log(err)
       });
-  }, []);
+  }, [profPic]);
 
    
   function handleClickDelete(id: number,modalDelete:boolean): void {
@@ -54,15 +56,13 @@ const HomePage = () => {
   return (
     <>
       <div className="flex flex-col h-screen w-full items-center bg-slate-500">
-        <div className="bg-slate-500 w-full absolute flex flex-row items-center justify-between p-4 
-        ">
-          
+        <div className="bg-slate-500 w-full absolute flex flex-row items-center justify-between p-4 shadow-md">          
           <div>
             <h2 className="text-xl font-semibold">{email}</h2>
           </div>
           <div className="relative flex flex-col items-center group">
             <img
-            className="h-12 w-12 rounded-3xl hover:border-[2px]"
+            className="h-12 w-12 rounded-3xl hover:border-[2px] duration-75 "
             src={`data:image/jpeg;base64,${profPic}`}
             />
             <span className="flex flex-col text-xs font-bold gap-2 absolute top-14 p-2 rounded-lg origin-top scale-y-0 group-hover:scale-100 duration-100 bg-[#E2E8F0]">
@@ -71,7 +71,7 @@ const HomePage = () => {
           </div>
         </div>
 
-        <div className="h-full w-full flex flex-col pt-40 overflow-y-auto  ">
+        <div className="h-full w-full flex flex-col pt-20 overflow-y-auto  ">
           <div className="w-full  flex flex-row justify-center p-5">
             <button
               type="submit"
@@ -93,7 +93,11 @@ const HomePage = () => {
               > 
                 <div className="">
                   <div className="flex flex-row justify-between items-center px-2 border-b-[1px] border-black my-2">
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 py-2">
+                      <img
+                      className="h-12 w-12 rounded-3xl"
+                      src={`data:image/jpeg;base64,${value.profile_picture}`}
+                      />
                       <h2 className="text-xl font-semibold">{value.profile_name}</h2>
                     </div>
                     <div className="flex flex-row gap-10">

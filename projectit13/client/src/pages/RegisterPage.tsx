@@ -11,7 +11,9 @@ import { useState } from "react";
 interface valuesType {
   email: string,
   username: string,
-  password: string
+  password: string,
+  profile_picture: File | null;
+  profile_name:string;
 }
 
 const RegisterPage = () => {
@@ -21,16 +23,30 @@ const RegisterPage = () => {
     email: '',
     username: '',
     password: '',
-    cpassword:''
+    cpassword:'',
+    profile_picture: null,
+    profile_name:''
   };
   
   const onSubmit = async (initialValues: valuesType) => {
+    const formData = new FormData();
+    formData.append("email", initialValues.email);
+    formData.append("username", initialValues.username);
+    formData.append("password", initialValues.password);
+    formData.append("profile_name", initialValues.profile_name);
+    if (initialValues.profile_picture !== null) {
+      formData.append("profile_picture", initialValues.profile_picture);
+    } else {
+      formData.append("profile_picture", ''); 
+    }
+
+    // await axios.post('http://localhost:8081/register', formData);
+    console.log(initialValues);
     const check = await axios.get('http://localhost:8081/check', {
     params: {
       email: initialValues.email,
     },
     });
-
     const value = localStorage.getItem(formik.values.email);
     value !== null ? setEmailExist(true) : setEmailExist(false);
     const dataExists = check.data.exists === true; 
@@ -38,9 +54,9 @@ const RegisterPage = () => {
     // console.log(dataExists)
     if (dataExists) {
       console.log(dataExists, value);
-      localStorage.setItem(initialValues.email, String(dataExists));
+      // localStorage.setItem(initialValues.email, String(dataExists));
     } else {
-      axios.post('http://localhost:8081register', initialValues);
+      await axios.post('http://localhost:8081/register', formData);
       navigate('/');
     }
       
@@ -52,7 +68,9 @@ const RegisterPage = () => {
     email: yup.string().email('Inavalid Input Email').required('Required'),
     username: yup.string().min(4, 'Minimum 4 characters').required('Required'),
     password: yup.string().min(6, "Minimum 6 characters").required('Required'),
-    cpassword: yup.string().required('Required').oneOf([yup.ref('password')], 'Password must match')
+    cpassword: yup.string().required('Required').oneOf([yup.ref('password')], 'Password must match'),
+    profile_name: yup.string().required('Required')
+
   })
   const formik = useFormik({
     initialValues,
@@ -80,6 +98,49 @@ const RegisterPage = () => {
                 </div>
                 
                 <div className="">
+                  <div className="mb-3 w-full">
+                    <label
+                      htmlFor="profile_picture"
+                      className="block text-sm font-semibold text-white"
+                    >
+                      Upload Image
+                    </label>
+                    <input
+                      type="file"
+                      id="profile_picture"
+                      name="profile_picture"
+                      className="mt-1 p-2 border border-gray-300 rounded-md bg-white text-gray-700 w-full"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          formik.setFieldValue("profile_picture", file);
+                        }
+                      }}
+                      required
+                      onBlur={formik.handleBlur}
+                    />
+                  </div>
+                  <div className="">
+                  <label 
+                  htmlFor="profile_name"
+                  className="text-white font-semibold text-sm">profile name</label>
+                  <div className="flex items-center  bg-[rgb(211,211,211)] rounded-xl p-[8px_8px] mb-3">
+                    <span className="border-r-[1px] border-[black] pr-1 mr-1">
+                    <CiLock />
+                    </span>
+                    <CustomInput  
+                    styles="rounded-[20px] bg-[lightgray] w-full" 
+                    type="profile_name"
+                    placeholder="profile_name" 
+                    name='profile_name'
+                    values={formik.values.profile_name}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    />
+                  </div>
+                  {formik.touched.profile_name && formik.errors.profile_name && <div className="text-red-600">{formik.errors.profile_name}</div>}
+                </div>
+                  
                   <label 
                   htmlFor=""
                   className="text-white font-semibold text-sm">EMAIL</label>

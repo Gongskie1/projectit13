@@ -168,7 +168,6 @@ app.get('/getcredentials', (req, res) => {
 
   db.query(sql, [user_id], (error, data) => {
     if (error) return res.json(error);
-    // Assuming 'data' is an array, you can get the first row (if any)
     const result = data.length > 0 ? data[0] : null;
     return res.json(result);
   });

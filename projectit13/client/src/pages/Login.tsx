@@ -14,7 +14,7 @@ interface ValuesType {
 
 const Login = () => {
   const navigate = useNavigate();
-  const [valid, setValid] = useState<boolean>(false);
+    const [loginError, setLoginError] = useState<boolean>(false);
 
   const validationSchema = yup.object({
     username: yup.string().required('Required'),
@@ -36,7 +36,7 @@ const onSubmit = async (initialValues: ValuesType) => {
       console.log('loging inn');
       navigate('homepage');
     } else {
-      setValid(true);
+      setLoginError(true);
       console.log('Invalid password or username')
     }
 
@@ -90,8 +90,8 @@ const onSubmit = async (initialValues: ValuesType) => {
              {formik.touched.username && formik.errors.username && (
               <div className="text-red-500 text-sm mb-2">{formik.errors.username}</div>
             )}
-            {valid&& (
-              <div className="text-red-500 text-sm mb-2">Invalid Account</div>
+            {loginError && (
+              <div className="text-red-500 text-sm mb-2">Invalid username or password</div>
             )}
             <div className="flex items-center  bg-[rgb(211,211,211)] rounded-xl p-[8px_8px] mb-3">
               <span className="border-r-[1px] border-[black] pr-1 mr-1">
@@ -112,8 +112,8 @@ const onSubmit = async (initialValues: ValuesType) => {
                 {formik.touched.password && formik.errors.password && (
               <div className="text-red-500 text-sm mb-2">{formik.errors.password}</div>
             )}
-            {valid&& (
-              <div className="text-red-500 text-sm mb-2">Invalid Account</div>
+            {loginError && (
+              <div className="text-red-500 text-sm mb-2">Invalid username or password</div>
             )}
             <div>
               <Link to="register" className="text-xs text-[purple]">

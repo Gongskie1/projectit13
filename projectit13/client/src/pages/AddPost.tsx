@@ -28,7 +28,7 @@ const AddPost = ({ openModal, closeModal }: isOpen) => {
 
       console.log("FormData before sending:", values);
 
-      await axios.post("http://localhost:8081/upload", formData);
+      await axios.post("http://localhost:8083/upload", formData);
       window.location.reload();
       closeModal(false)
     } catch (error) {

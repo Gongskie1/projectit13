@@ -14,7 +14,7 @@ const EditUserPost = () => {
     const navigate = useNavigate();
     const [post, setPost] = useState<ValuesType | null>(null);
     useEffect(() => {
-        fetch(`http://localhost:8081/posts/${id}`)
+        fetch(`http://localhost:8083/posts/${id}`)
             .then((res) => res.json())
             .then((data) => {
                 console.log(id)
@@ -51,7 +51,7 @@ const EditUserPost = () => {
     }
 
     axios
-        .put(`http://localhost:8081/posts/${id}`, formData, {
+        .put(`http://localhost:8083/posts/${id}`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },

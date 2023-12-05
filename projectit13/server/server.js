@@ -2,13 +2,25 @@ const express = require('express');
 const mysql = require('mysql');
 const cors = require("cors");
 const app = express();
-const port = 8081;
+const port = 8083;
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 const session = require('express-session');
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
+const http = require("http");
+const {Server} = require("socket.io")
+const server = http.createServer(app);
+
+const io = new Server(server,{
+  cors:{
+    origin: "http://localhost:5173",
+    methods: ['GET,HEAD,PUT,PATCH,POST,DELETE']
+  },
+  path: "/socket.io",
+});
+
 
 
 app.use(bodyParser.json())
@@ -143,13 +155,13 @@ app.get('/posts/:id', (request, response) => {
 // Update a post
 app.put('/posts/:id', upload.single('image_upload'), (request, response) => {
     const id = request.params.id;
-    const { message, profile_name } = request.body;
+    const { message } = request.body;
      const image_upload = request.file.buffer.toString('base64');
 
     console.log( image_upload);
 
-    const sql = "UPDATE user_posts SET message=?, image_upload=?, profile_name=? WHERE id=?";
-    const params = [message, image_upload, profile_name, id];  // Use uploadedFile.buffer
+    const sql = "UPDATE user_posts SET message=?, image_upload=? WHERE id=?";
+    const params = [message, image_upload, id]; 
 
     db.query(sql, params, (error, result) => {
         if (error) {
@@ -166,6 +178,7 @@ app.put('/posts/:id', upload.single('image_upload'), (request, response) => {
 });
 
 // ------------------------------------------------------------------------
+// getting all data from, user_register
 app.get('/getcredentials', (req, res) => {
   const sql = `SELECT * FROM user_register WHERE id = ? LIMIT 1`;
   const id = req.session.user_id;
@@ -218,6 +231,29 @@ app.get('/accounts', (request, response) => {
         return response.json(data)
      }); 
 });
-app.listen(port, () => {
+// ------------------------------------------------------------------------
+// for message 
+
+io.on("connection", (socket) => {
+    console.log(`User connected: ${socket.id}`);
+
+    socket.on("join_room", (data)=>{
+        socket.join(data);
+        console.log(`User With ID: ${socket.id} joined room: ${data}`)
+    });
+
+    socket.on("send_message", (data)=>{
+        console.log(data)
+        socket.to(data.room).emit('receive_message',data);
+    });
+
+    socket.on("disconnect", () => {
+        console.log(`User disconnected: ${socket.id}`);
+    });
+});
+// ----------------------------------------------------------------------
+
+server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+

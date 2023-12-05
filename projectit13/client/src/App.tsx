@@ -1,5 +1,13 @@
 import { Route, Routes } from "react-router-dom"
-import { EditProfilePage, EditUserPost, HomePage, Login, RegisterPage } from "./pages"
+import { 
+  EditProfilePage, 
+  EditUserPost, 
+  HomePage, 
+  Login, 
+  MessagePeopke, 
+  RegisterPage 
+} from "./pages"
+import './App.css'
 
 const App = () => {
   return (
@@ -11,7 +19,7 @@ const App = () => {
         <Route path="editprofile" element={<EditProfilePage />} />
         <Route path="dashboard" element={<EditProfilePage />} />
         <Route path="/edit/:id" element={<EditUserPost />} />
-
+        <Route path="message" element={<MessagePeopke />} />
       </Routes>
     </>
   )

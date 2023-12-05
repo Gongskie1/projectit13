@@ -5,3 +5,4 @@ export { default as DashboardPage } from './DashBoard';
 export { default as HomePage } from './HomePage';
 export { default as AddPost } from './AddPost';
 export { default as EditUserPost } from './EditUserPost';
+export { default as MessagePeopke } from './MessagePeople';

@@ -7,7 +7,7 @@ interface DeleteModalProps {
   id:number;
 }
 const deletePost = (id: number) => {
-    axios.delete(`http://localhost:8081/delete/${id}`)
+    axios.delete(`http://localhost:8083/delete/${id}`)
         .then((response) => {
           console.log('response: ' + response.data);
           window.location.reload();

@@ -5,6 +5,7 @@ import { MdEdit,MdDeleteOutline } from "react-icons/md";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { DeleteModal, LogOutModal } from "../components";
+import { AiOutlineMessage } from "react-icons/ai";
 
 interface Post {
   id:number
@@ -27,13 +28,13 @@ const HomePage = () => {
   const [email, setEamil] = useState();
   const [profPic, setprofPic] = useState();
   useEffect(() => {
-    fetch('http://localhost:8081/user-upload')
+    fetch('http://localhost:8083/user-upload')
       .then((rest) => rest.json())
       .then((data) => setData(data.data))
       .catch((err) => console.log(err));
       
     
-    axios.get('http://localhost:8081/getcredentials')
+    axios.get('http://localhost:8083/getcredentials')
       .then(res => {
         console.log(res)
         setEamil(res.data.profile_name)
@@ -60,14 +61,17 @@ const HomePage = () => {
           <div>
             <h2 className="text-xl font-semibold">{email}</h2>
           </div>
+          <div className="flex flex-row items-center gap-4">
+            <Link to={"/message"} ><AiOutlineMessage size={20}/></Link>
           <div className="relative flex flex-col items-center group">
-            <img
-            className="h-12 w-12 rounded-3xl hover:border-[2px] duration-75 "
-            src={`data:image/jpeg;base64,${profPic}`}
-            />
-            <span className="flex flex-col text-xs font-bold gap-2 absolute top-14 p-2 rounded-lg origin-top scale-y-0 group-hover:scale-100 duration-100 bg-[#E2E8F0]">
-              <button type="button" onClick={()=>setLogout(true)}>Logout</button>
-            </span>
+              <img
+              className="h-12 w-12 rounded-3xl hover:border-[2px] duration-75 "
+              src={`data:image/jpeg;base64,${profPic}`}
+              />
+              <span className="flex flex-col text-xs font-bold gap-2 absolute top-14 p-2 rounded-lg origin-top scale-y-0 group-hover:scale-100 duration-100 bg-[#E2E8F0]">
+                <button type="button" onClick={()=>setLogout(true)}>Logout</button>
+              </span>
+          </div>
           </div>
         </div>
 

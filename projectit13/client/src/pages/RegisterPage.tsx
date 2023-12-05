@@ -42,7 +42,7 @@ const RegisterPage = () => {
 
     // await axios.post('http://localhost:8081/register', formData);
     console.log(initialValues);
-    const check = await axios.get('http://localhost:8081/check', {
+    const check = await axios.get('http://localhost:8083/check', {
     params: {
       email: initialValues.email,
     },
@@ -56,7 +56,7 @@ const RegisterPage = () => {
       console.log(dataExists, value);
       // localStorage.setItem(initialValues.email, String(dataExists));
     } else {
-      await axios.post('http://localhost:8081/register', formData);
+      await axios.post('http://localhost:8083/register', formData);
       navigate('/');
     }
       

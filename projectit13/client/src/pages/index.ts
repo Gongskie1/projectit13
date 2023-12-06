@@ -6,3 +6,5 @@ export { default as HomePage } from './HomePage';
 export { default as AddPost } from './AddPost';
 export { default as EditUserPost } from './EditUserPost';
 export { default as MessagePeopke } from './MessagePeople';
+export { default as AuthPage} from "./AuthPage";
+export { default as ChatsPage} from "./ChatsPage";

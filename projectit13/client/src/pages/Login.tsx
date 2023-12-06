@@ -27,23 +27,17 @@ const Login = () => {
   };
 axios.defaults.withCredentials = true;
 const onSubmit = async (initialValues: ValuesType) => {
-  try {
     const response = await axios.post('http://localhost:8083/auth', initialValues, {
       withCredentials: true,
     });
-
+    // console.log(response.data.exists);
     if (response.data.exists) {
-      console.log('loging inn');
+      console.log('logging inn');
       navigate('homepage');
     } else {
       setLoginError(true);
-      console.log('Invalid password or username')
+      console.log('Invalid password or username');
     }
-
-    
-  } catch (error) {
-    console.error('Login failed:', error);
-  }
 };
 
   const formik = useFormik({
@@ -58,13 +52,37 @@ const onSubmit = async (initialValues: ValuesType) => {
         <div className="flex-[3] bg-[#753EC9]  p-[100px_75px]  rounded-xl">
           <div className="h-full text-white font-bold">
             <h1 className="text-5xl">Post your blog</h1>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Libero repellat a aliquid perferendis quia iusto adipisci,
-              enim reiciendis reprehenderit nemo non modi odit, unde iste!
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-              Deserunt quasi aliquam est vitae ut doloribus nesciunt amet possimus recusandae!
-              Voluptatibus temporibus perspiciatis quisquam pariatur aut harum quod fuga ullam laborum!
+            <p className="text-sm">
+             INTERACTIVE BLOG POST
+
+            CRUD OPERATION:<br />
+
+            1. Creators can create, update, retrieve, and delete blogs. <br />
+
+            2. Updating blog contents can be done with styles, uploading image or video in either stored, or from an internet resource and video links like Youtube, etc.<br />
+
+            3. Creators can also delete their blogs too.<br />
+
+
+            LOGIN, REGISTRATION, SESSION, and FORM VALIDATION<br />
+
+            1. Login requires a username or an email and a password of course. Once signed in, it stores localstorage and login session. Formik validation is also implemented in textfields, including formik validation in the blog’s input content.<br />
+
+
+            OPERATION/PROCESS BASED ON TITLE
+
+            Users can browse and view blogs based on their titles.
+            Creators can initiate the creation of a new blog post.
+            Authors can edit the content of their existing blogs.
+            Authors have the ability to delete their blogs.
+
+
+            EXTRA FEATURES WHICH ARE NOT DISCUSSED:
+
+            Image Upload and Save. - Image upload is possible in both account details, blog posts, and global socket.io realtime chat, including chat deletions, 
+
+            Image to longtext conversion and reversal
+
             </p>
           </div>
         </div>

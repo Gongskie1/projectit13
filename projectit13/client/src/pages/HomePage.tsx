@@ -36,10 +36,8 @@ const HomePage = () => {
     
     axios.get('http://localhost:8083/getcredentials')
       .then(res => {
-        console.log(res)
         setEamil(res.data.profile_name)
         setprofPic(res.data.profile_picture)
-        console.log(profPic)
       })
       .catch(err => {
         console.log(err)

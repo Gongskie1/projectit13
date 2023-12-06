@@ -10,22 +10,47 @@ const session = require('express-session');
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const http = require("http");
-const {Server} = require("socket.io")
+const {Server} = require("socket.io");
+const { default: axios } = require('axios');
 const server = http.createServer(app);
+const { createProxyMiddleware } = require('http-proxy-middleware');
+// const httpProxy = require('http-proxy');
+// const proxy = httpProxy.createProxyServer();
 
-const io = new Server(server,{
-  cors:{
-    origin: "http://localhost:5173",
-    methods: ['GET,HEAD,PUT,PATCH,POST,DELETE']
-  },
-  path: "/socket.io",
-});
+// app.use((req, res) => {
+//   proxy.web(req, res, { target: 'https://api.chatengine.io', changeOrigin: true });
+// });
+// const io = new Server(server,{
+//   cors:{
+//     origin: "http://localhost:5173",
+//     methods: ['GET,HEAD,PUT,PATCH,POST,DELETE']
+//   },
+//   path: "/socket.io",
+// });
 
-
+// app.use(
+//   'http://localhost:8083/api/users/search/',  // Change '/api' to whatever path you want to use for proxying
+//   createProxyMiddleware({
+//     target: 'https://api.chatengine.io/users/search/',
+//     changeOrigin: true,
+//     pathRewrite: {
+//       'http://localhost:8083/api/users/search/': 'http://localhost:8083/api/users/search/',  // Remove the '/api' prefix when forwarding the request
+//     },
+    
+//   })
+// );
 
 app.use(bodyParser.json())
 app.use(cookieParser());
-app.use(cors({ origin: ['http://localhost:5173'], methods:['GET,HEAD,PUT,PATCH,POST,DELETE'], credentials: true }));
+app.use(
+  cors({
+    origin: ["http://localhost:5173" ,"https://api.chatengine.io"],
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+    origin: "http://localhost:5173", 
+  })
+);
 app.use(express.json()); 
 app.use(session(
   {
@@ -34,7 +59,7 @@ app.use(session(
     saveUninitialized: true,
     cookie: {
       secure: false,
-      sameSite: 'none',
+      sameSite: true,
       maxAge: 1000 * 60 * 60 * 24
     }
   }
@@ -54,7 +79,7 @@ app.post('/register', upload.single('profile_picture'), (req, res) => {
     const { email, username, password,profile_name } = req.body;
     const profile_picture = req.file.buffer.toString('base64');
     const query = "INSERT INTO user_register (email, username, password, profile_name, profile_picture) VALUES (?, ?,?, ?, ?) ";
-    console.log(profile_picture);
+    // console.log(profile_picture);
     db.query(query, [email, username, password, profile_name, profile_picture], (err, result) => {
     if (err) {
         console.error('Error registering user:', err);
@@ -118,7 +143,7 @@ app.delete('/delete/:id', (request, res) => {
     console.log('Received DELETE request for post with id:', id);
 
     request.session.delete = id;
-    console.log('Stored id in session:', request.session.delete);
+    // console.log('Stored id in session:', request.session.delete);
 
     const sql = 'DELETE FROM user_posts WHERE id = ?';
     db.query(sql, [id], (error, result) => {
@@ -158,7 +183,7 @@ app.put('/posts/:id', upload.single('image_upload'), (request, response) => {
     const { message } = request.body;
      const image_upload = request.file.buffer.toString('base64');
 
-    console.log( image_upload);
+    // console.log( image_upload);
 
     const sql = "UPDATE user_posts SET message=?, image_upload=? WHERE id=?";
     const params = [message, image_upload, id]; 
@@ -205,14 +230,18 @@ app.post('/auth', async (req, res) => {
     });
 
     const dataExists = result.length > 0;
+    // console.log(dataExists);
+    // res.json({exists:dataExists});
     if (dataExists) {
       req.session.profile_name = result[0].profile_name;
       req.session.user_id = result[0].id;
       req.session.email = result[0].email;
       req.session.profile_picture = result[0].profile_picture;
       // console.log('Session after setting email:', req.session);
-      console.log('req.session.profile_picture:', req.session.profile_picture);
-      console.log('ID NAKO NI:', req.session.user_id);
+      // console.log('req.session.profile_picture:', req.session.profile_picture);
+      // console.log('ID NAKO NI:', req.session.user_id);
+      return res.json({ exists: dataExists });
+    }else{
       return res.json({ exists: dataExists });
     }
   } catch (error) {
@@ -232,28 +261,108 @@ app.get('/accounts', (request, response) => {
      }); 
 });
 // ------------------------------------------------------------------------
-// for message 
+// for message socket.io
 
-io.on("connection", (socket) => {
-    console.log(`User connected: ${socket.id}`);
+// io.on("connection", (socket) => {
+//     console.log(`User connected: ${socket.id}`);
 
-    socket.on("join_room", (data)=>{
-        socket.join(data);
-        console.log(`User With ID: ${socket.id} joined room: ${data}`)
-    });
+//     socket.on("join_room", (data)=>{
+//         socket.join(data);
+//         console.log(`User With ID: ${socket.id} joined room: ${data}`)
+//     });
 
-    socket.on("send_message", (data)=>{
-        console.log(data)
-        socket.to(data.room).emit('receive_message',data);
-    });
+//     socket.on("send_message", (data)=>{
+//         console.log(data)
+//         socket.to(data.room).emit('receive_message',data);
+//     });
 
-    socket.on("disconnect", () => {
-        console.log(`User disconnected: ${socket.id}`);
-    });
+//     socket.on("disconnect", () => {
+//         console.log(`User disconnected: ${socket.id}`);
+//     });
+// });
+
+// ----------------------------------------------------------------------
+// Chat Back-end
+// app.post("/authenticate", async (req, res) => {
+//   const { username, secret } = req.body;
+//   console.log("This is my username: ",username)
+//   console.log("This is my password: ",secret)
+//   try {
+//     const r = await axios.put(
+//       "https://api.chatengine.io/users/",
+//       { username: username, secret: secret, username },
+//       { headers: { 'private-key': "69ad5ab6-dcac-424b-a16f-a328b80275c2" } }
+//     );
+//     return res.status(r.status).json(r.data);
+//   } catch (e) {
+//     // Use 'e' instead of 'r' in the catch block
+//     return res.status(e.response.status).json(e.response.data);
+//   }
+// });
+app.post("/signup", async (req, res) => {
+  const { username, secret, email } = req.body;
+
+  console.log("my username: ",username);
+  console.log("my secret: ",secret);
+  console.log("my email: ",email);
+  // Store a user-copy on Chat Engine!
+  try {
+    const r = await axios.post(
+      "https://api.chatengine.io/users/",
+      { username, secret, email },
+      { headers: { "Private-Key": "69ad5ab6-dcac-424b-a16f-a328b80275c2" } }
+    );
+    return res.status(r.status).json(r.data);
+  } catch (e) {
+    return res.status(e.response?.status || 500).json(e.response?.data || { error: 'Internal Server Error' });
+  }
 });
+
+app.post("/login", async (req, res) => {
+  const { username, secret } = req.body;
+
+  // Fetch this user from Chat Engine in this project!
+  try {
+    const r = await axios.get("https://api.chatengine.io/users/me/", {
+      headers: {
+        "Project-ID": "6e49091d-2d5f-4b89-a94b-ca0a527b67d8",
+        "User-Name": username,
+        "User-Secret": secret,
+      },
+    });
+    return res.status(r.status).json(r.data);
+  } catch (e) {
+    return res.status(e.response?.status || 500).json(e.response?.data || { error: 'Internal Server Error' });
+  }
+});
+
+// app.get('/search-users', async (req, res) => {
+//   try {
+//     const { query } = req.query;
+
+//     // Use your Chat Engine API key and endpoint
+//     const chatEngineApiKey = 'YOUR_CHAT_ENGINE_API_KEY';
+//     const chatEngineApiEndpoint = `https://api.chatengine.io/users/search/?username=${query}`;
+
+//     const response = await axios.get(chatEngineApiEndpoint, {
+//       headers: {
+//         'Project-ID': chatEngineApiKey,
+//         'User-Name': 'admin', // Replace with your Chat Engine admin username
+//         'User-Secret': 'admin-secret', // Replace with your Chat Engine admin secret
+//       },
+//     });
+
+//     res.json(response.data);
+//   } catch (error) {
+//     console.error('Error searching users:', error);
+//     res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// });
+// Project ID:6e49091d-2d5f-4b89-a94b-ca0a527b67d8
+// Private Key:69ad5ab6-dcac-424b-a16f-a328b80275c2
 // ----------------------------------------------------------------------
 
-server.listen(port, () => {
+app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
 

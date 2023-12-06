@@ -47,13 +47,14 @@ const RegisterPage = () => {
       email: initialValues.email,
     },
     });
-    const value = localStorage.getItem(formik.values.email);
-    value !== null ? setEmailExist(true) : setEmailExist(false);
+    // const value = localStorage.getItem(formik.values.email);
+    // value !== null ? setEmailExist(true) : setEmailExist(false);
     const dataExists = check.data.exists === true; 
 
     // console.log(dataExists)
     if (dataExists) {
-      console.log(dataExists, value);
+      console.log(dataExists);
+      setEmailExist(true);
       // localStorage.setItem(initialValues.email, String(dataExists));
     } else {
       await axios.post('http://localhost:8083/register', formData);

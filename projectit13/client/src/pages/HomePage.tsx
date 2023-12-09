@@ -15,7 +15,7 @@ interface Post {
   profile_name: string;
   profile_picture: string;
 }
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = false;
 
 const HomePage = () => {
   const [data, setData] = useState<Post[]>([]); 
@@ -34,7 +34,7 @@ const HomePage = () => {
       .catch((err) => console.log(err));
       
     
-    axios.get('http://localhost:8083/getcredentials')
+    axios.get('http://localhost:8083/getcredentials',{withCredentials:true})
       .then(res => {
         setEamil(res.data.profile_name)
         setprofPic(res.data.profile_picture)

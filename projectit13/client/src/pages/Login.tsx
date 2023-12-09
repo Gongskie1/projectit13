@@ -25,11 +25,9 @@ const Login = () => {
     username: '',
     password: '',
   };
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = false;
 const onSubmit = async (initialValues: ValuesType) => {
-    const response = await axios.post('http://localhost:8083/auth', initialValues, {
-      withCredentials: true,
-    });
+    const response = await axios.post('http://localhost:8083/auth', initialValues, { withCredentials: true }  );
     // console.log(response.data.exists);
     if (response.data.exists) {
       console.log('logging inn');

@@ -27,8 +27,6 @@ const AuthPage: React.FC<AuthPageProps> = (props) => {
         username,
         secret,
         email,
-        // first_name,
-        // last_name,
       })
       .then((r) => props.onAuth({ ...r.data, secret }))
       .catch((e) => console.log(JSON.stringify(e.response.data)));

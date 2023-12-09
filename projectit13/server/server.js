@@ -12,7 +12,7 @@ const cookieParser = require('cookie-parser');
 const http = require("http");
 const {Server} = require("socket.io");
 const { default: axios } = require('axios');
-const server = http.createServer(app);
+// const server = http.createServer(app);
 const { createProxyMiddleware } = require('http-proxy-middleware');
 // const httpProxy = require('http-proxy');
 // const proxy = httpProxy.createProxyServer();
@@ -42,15 +42,30 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 app.use(bodyParser.json())
 app.use(cookieParser());
-app.use(
-  cors({
-    origin: ["http://localhost:5173" ,"https://api.chatengine.io"],
-    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-    origin: "http://localhost:5173", 
-  })
-);
+app.use(cors({ credentials: true, origin: 'http://localhost:5173' }));
+// const corsOptions = {
+//   origin: (origin, callback) => {
+//     // Check if the origin is allowed
+//     const allowedOrigins = ['https://api.chatengine.io/users/search/',"http://localhost:5173"];
+//     if (allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//   allowedHeaders: 'Content-Type,Authorization',
+//   credentials: true,
+// };
+// app.use(
+//   "/api", // Adjust the path as needed
+//   createProxyMiddleware({
+//     target: "https://api.chatengine.io", // Chat Engine API URL
+//     changeOrigin: true,
+//     secure: false, // For development, you can set it to false
+//   })
+// );
+// app.use(cors(corsOptions));
 app.use(express.json()); 
 app.use(session(
   {
@@ -64,7 +79,19 @@ app.use(session(
     }
   }
 ));
+// const whitelist = ["https://api.chatengine.io/users/search"]; 
 
+// const corsOptions = { 
+//     origin: (origin, callback) => { 
+//         if (!origin || whitelist.includes(origin)) { 
+//             callback(null, true); 
+//         } else { 
+//             callback(new Error("Not allowed by CORS")); 
+//         } 
+//     }, 
+//     credentials: true, 
+// }; 
+// app.use(cors(corsOptions));
 
 
 const db = mysql.createConnection({
@@ -310,7 +337,7 @@ app.post("/signup", async (req, res) => {
     const r = await axios.post(
       "https://api.chatengine.io/users/",
       { username, secret, email },
-      { headers: { "Private-Key": "69ad5ab6-dcac-424b-a16f-a328b80275c2" } }
+      { headers: { "Private-Key": "1765b1d6-f0a2-4b19-8b5d-b9b5a54cdd13" } }
     );
     return res.status(r.status).json(r.data);
   } catch (e) {
@@ -325,7 +352,7 @@ app.post("/login", async (req, res) => {
   try {
     const r = await axios.get("https://api.chatengine.io/users/me/", {
       headers: {
-        "Project-ID": "6e49091d-2d5f-4b89-a94b-ca0a527b67d8",
+        "Project-ID": "d7b84d68-4d9c-4fab-b65e-f0b925d5257c",
         "User-Name": username,
         "User-Secret": secret,
       },

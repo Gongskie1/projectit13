@@ -13,15 +13,15 @@ const ChatsPage: React.FC<ChatPageProps> = ({ user }) => {
   return (
     <div style={{ height: "100vh" }}>
       <PrettyChatWindow
-        projectId="6e49091d-2d5f-4b89-a94b-ca0a527b67d8"
+        projectId="d7b84d68-4d9c-4fab-b65e-f0b925d5257c"
         username={user.username}
         secret={user.secret}
         style={{ height: "100%" }}
       />
-      <span className="text-red-500">
+      {/* <span className="text-red-500">
         {user.username}
-      {user.secret}
-      </span>
+        {user.secret}
+      </span> */}
     </div>
   );
 };

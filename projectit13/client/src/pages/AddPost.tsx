@@ -42,54 +42,56 @@ const AddPost = ({ openModal, closeModal }: isOpen) => {
   });
 
   return (
-    <div className={`${openModal ? ' block' : 'hidden'} absolute top-0 right-0 left-0 bottom-0 bg-neutral-400 bg-opacity-40 backdrop-blur-md`}>
-      <button
-            type="button"
-            className="text-3xl absolute right-4 top-4 z-50"
-            onClick={()=> closeModal(false)}
+    <div className={` ${openModal ? 'block' : 'hidden'} fixed top-0 right-0 left-0 bottom-0 bg-neutral-400 bg-opacity-40 backdrop-blur-md`}>
+  <button
+    type="button"
+    className="text-3xl absolute right-4 top-4 z-50"
+    onClick={() => closeModal(false)}
+  >
+    <IoMdCloseCircle />
+  </button>
+  <div className="flex flex-row justify-center relative mt-10">
+    <div className="bg-slate-500 w-1/2 p-4">
+      <form onSubmit={formik.handleSubmit}>
+        <div className="relative">
+          <textarea
+            name="message"
+            className="w-full p-2 rounded-md"
+            id="message"
+            placeholder="Post your thought"
+            value={formik.values.message}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            required
+          />
+          <button
+            type="submit"
+            className="absolute bottom-2 right-2 text-xl"
           >
-            <IoMdCloseCircle />
+            <CiLocationArrow1 />
           </button>
-      <div className="flex flex-row justify-center relative">
-        <div className="mt-10 bg-slate-500 w-1/2">
-          <form onSubmit={formik.handleSubmit}>
-            <div className="relative">
-              <textarea
-                name="message"
-                className="w-full p-2"
-                id="message"
-                placeholder="Post your thought"
-                value={formik.values.message}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                required
-              />
-              <button
-                type="submit"
-                className="absolute bottom-2 right-2 text-xl">
-                <CiLocationArrow1 />
-              </button>
-            </div>
-            <div>
-              <input
-                type="file"
-                id="imageUpload"
-                name="imageUpload"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    formik.setFieldValue("imageUpload", file);
-                  }
-                }}
-                required
-                onBlur={formik.handleBlur}
-              />
-            </div>
-          </form>
-          
         </div>
-      </div>
+        <div className="mt-4">
+          <label htmlFor="imageUpload" className="block text-white font-semibold mb-2">Upload Image</label>
+          <input
+            type="file"
+            id="imageUpload"
+            name="imageUpload"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                formik.setFieldValue("imageUpload", file);
+              }
+            }}
+            
+            onBlur={formik.handleBlur}
+            className="w-full p-2 rounded-md border border-gray-300 bg-white text-gray-700"
+          />
+        </div>
+      </form>
     </div>
+  </div>
+</div>
   );
 };
 

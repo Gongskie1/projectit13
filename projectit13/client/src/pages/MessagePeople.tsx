@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AuthPage, ChatsPage } from ".";
+import axios from "axios";
 // import axios from "axios";
 
 const MessagePeople = () => {
@@ -7,6 +8,19 @@ const MessagePeople = () => {
     username: "",
     secret: "",
   });
+
+   useEffect(()=>{
+    axios.get('http://localhost:8083/getcredentials',{withCredentials:true})
+      .then(res => {
+        setUser({
+          username: res.data.username,
+          secret: res.data.password,
+        });
+      })
+      .catch(err => {
+        console.log(err)
+      });
+  },[]);
 
 
   if (!user || !user.username || !user.secret) {

@@ -103,17 +103,24 @@ const db = mysql.createConnection({
 // ------------------------------------------------------------------------
 // REGISTER ACCOUNTS 
 app.post('/register', upload.single('profile_picture'), (req, res) => {
-    const { email, username, password,profile_name } = req.body;
+    const { email, username, profile_name } = req.body;
+    const secret = req.body.password
     const profile_picture = req.file.buffer.toString('base64');
     const query = "INSERT INTO user_register (email, username, password, profile_name, profile_picture) VALUES (?, ?,?, ?, ?) ";
-    // console.log(profile_picture);
-    db.query(query, [email, username, password, profile_name, profile_picture], (err, result) => {
+      db.query(query, [email, username, secret, profile_name, profile_picture], (err, result) => {
     if (err) {
         console.error('Error registering user:', err);
         return res.status(500).json({ error: 'Internal Server Error' });
+    }else{
+      axios.post(
+      "https://api.chatengine.io/users/",
+      { username, secret },
+      { headers: { "Private-Key": "1765b1d6-f0a2-4b19-8b5d-b9b5a54cdd13" } })
+      return res.json(result);
     }
-    return res.json(result);
+   
 });
+
 });
 // ------------------------------------------------------------------------
 // Endpoint to check if email exists
@@ -327,16 +334,14 @@ app.get('/accounts', (request, response) => {
 //   }
 // });
 app.post("/signup", async (req, res) => {
-  const { username, secret, email } = req.body;
+  const { username, secret } = req.body;
 
-  console.log("my username: ",username);
-  console.log("my secret: ",secret);
-  console.log("my email: ",email);
+
   // Store a user-copy on Chat Engine!
   try {
     const r = await axios.post(
       "https://api.chatengine.io/users/",
-      { username, secret, email },
+      { username, secret },
       { headers: { "Private-Key": "1765b1d6-f0a2-4b19-8b5d-b9b5a54cdd13" } }
     );
     return res.status(r.status).json(r.data);

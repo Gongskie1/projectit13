@@ -7,7 +7,6 @@ import * as yup from 'yup';
 interface ValuesType {
   message: string;
   image_upload: File | null;
-  profile_name: string;
 }
 const EditUserPost = () => {
     const { id } = useParams();

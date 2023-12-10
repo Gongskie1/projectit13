@@ -47,15 +47,12 @@ const RegisterPage = () => {
       email: initialValues.email,
     },
     });
-    // const value = localStorage.getItem(formik.values.email);
-    // value !== null ? setEmailExist(true) : setEmailExist(false);
+
     const dataExists = check.data.exists === true; 
 
-    // console.log(dataExists)
     if (dataExists) {
       console.log(dataExists);
       setEmailExist(true);
-      // localStorage.setItem(initialValues.email, String(dataExists));
     } else {
       await axios.post('http://localhost:8083/register', formData);
       navigate('/');
@@ -80,7 +77,7 @@ const RegisterPage = () => {
 
   }); 
   return (
-    <div className="flex h-screen bg-[#201D22] p-10 ">
+    <div className="flex h-screen bg-[#201D22] p-10">
       <div className=" h-full w-full bg-[#2C282E] rounded-xl flex p-2">
         <div className="flex-1 bg-[#753EC9] rounded-lg text-white font-bold">
             <div className="pl-4 pt-4">
@@ -88,7 +85,7 @@ const RegisterPage = () => {
                 <h2 className="text-2xl">Blog you thaught</h2>
             </div>
         </div>
-        <div className="flex-1 ">
+        <div className="flex-1  overflow-auto">
           <form
             onSubmit={formik.handleSubmit}
             className="p-[20px_40px]">

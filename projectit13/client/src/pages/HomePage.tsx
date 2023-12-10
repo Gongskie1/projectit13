@@ -48,8 +48,6 @@ const HomePage = () => {
   function handleClickDelete(id: number,modalDelete:boolean): void {
       setDeleteModal(modalDelete)
       setIdToDelete(id)
-    
-    
   }
 
   return (
@@ -60,7 +58,7 @@ const HomePage = () => {
             <h2 className="text-xl font-semibold">{email}</h2>
           </div>
           <div className="flex flex-row items-center gap-4">
-            <Link to={"/message"} ><AiOutlineMessage size={20}/></Link>
+            <Link to={"/message"} className="rounded-3xl hover:border-[2px] hover:scale-x-110 duration-500"><AiOutlineMessage size={20}/></Link>
           <div className="relative flex flex-col items-center group">
               <img
               className="h-12 w-12 rounded-3xl hover:border-[2px] duration-75 "

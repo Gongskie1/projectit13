@@ -2,15 +2,12 @@ import React, { useState, FormEvent } from "react";
 import axios from "axios";
 
 interface AuthPageProps {
-  onAuth: (authData: { username: string; secret: string; email?: string }) => void;
+  onAuth: (authData: { username: string; secret: string;}) => void;
 }
 
 const AuthPage: React.FC<AuthPageProps> = (props) => {
   const [username, setUsername] = useState<string>("");
   const [secret, setSecret] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  // const [first_name, setFirstName] = useState<string>("");
-  // const [last_name, setLastName] = useState<string>("");
 
   const onLogin = (e: FormEvent) => {
     e.preventDefault();
@@ -26,7 +23,6 @@ const AuthPage: React.FC<AuthPageProps> = (props) => {
       .post("http://localhost:8083/signup", {
         username,
         secret,
-        email,
       })
       .then((r) => props.onAuth({ ...r.data, secret }))
       .catch((e) => console.log(JSON.stringify(e.response.data)));
@@ -68,24 +64,7 @@ const AuthPage: React.FC<AuthPageProps> = (props) => {
             placeholder="Password"
             onChange={(e) => setSecret(e.target.value)}
           />
-          <input
-            type="text"
-            name="email"
-            placeholder="Email"
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          {/* <input
-            type="text"
-            name="first_name"
-            placeholder="First name"
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-          <input
-            type="text"
-            name="last_name"
-            placeholder="Last name"
-            onChange={(e) => setLastName(e.target.value)}
-          /> */}
+         
           <button type="submit">SIGN UP</button>
         </form>
       </div>
